@@ -7,6 +7,7 @@ from typing import List, Optional, Dict
 from pydantic import BaseModel
 import uvicorn
 import os
+import subprocess
 
 # Enhanced Pydantic models
 class Student(BaseModel):
@@ -124,9 +125,9 @@ def setup_indices():
         es.indices.create(index='assignments', body=assignment_mapping)
 
 # Call setup_indices when the app starts
-@app.on_event("startup")
-async def startup_event():
-    setup_indices()
+# @app.on_event("startup")
+# async def startup_event():
+#     setup_indices()
 
 @app.get("/api/dashboard", response_model=DashboardStats)
 async def get_dashboard_stats():
@@ -505,6 +506,23 @@ async def read_grades_page():
     return FileResponse('./templates/grades.html')
 
 
-
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    # Number of workers
+    workers = 4
+
+    # Command to run FastAPI app using uvicorn with workers
+    command = [
+        "nohup",  # Run the command in the background
+        "uvicorn",
+        "app_name:app",  # Replace `app_name` with your Python file where `app` is defined
+        "--host", "0.0.0.0",
+        "--port", "8000",
+        "--workers", str(workers),
+        "&"  # Background process
+    ]
+
+    # Run the command
+    with open("nohup.out", "w") as nohup_out:
+        subprocess.Popen(command, stdout=nohup_out, stderr=nohup_out)
+
+    print("FastAPI app is running with multiple workers in the background.")
