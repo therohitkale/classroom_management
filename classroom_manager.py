@@ -514,7 +514,7 @@ if __name__ == "__main__":
     command = [
         "nohup",  # Run the command in the background
         "uvicorn",
-        "main:app",  # Replace `app_name` with your Python file where `app` is defined
+        "classroom_manager:app",  # Replace `app_name` with your Python file where `app` is defined
         "--host", "0.0.0.0",
         "--port", "8000",
         "--workers", str(workers),
