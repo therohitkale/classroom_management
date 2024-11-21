@@ -1,0 +1,88 @@
+<!-- templates/student_profile.html -->
+{% extends "base.html" %}
+{% block content %}
+<div class="container">
+    <h2>Student Profile</h2>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ student.name }}</h5>
+                    <p class="card-text">ID: {{ student.student_id }}</p>
+                    <p class="card-text">Grade: {{ student.grade }}</p>
+                    <p class="card-text">Email: {{ student.email }}</p>
+                    <p class="card-text">Phone: {{ student.phone }}</p>
+                    <p class="card-text">Parent Email: {{ student.parent_email }}</p>
+                    <p class="card-text">Status: {{ student.status }}</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8">
+            <ul class="nav nav-tabs" id="studentTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="attendance-tab" data-toggle="tab" href="#attendance" role="tab">Attendance</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="grades-tab" data-toggle="tab" href="#grades" role="tab">Grades</a>
+                </li>
+            </ul>
+            
+            <div class="tab-content" id="studentTabContent">
+                <div class="tab-pane fade show active" id="attendance" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Status</th>
+                                    <th>Notes</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for record in attendance %}
+                                <tr>
+                                    <td>{{ record._source.date }}</td>
+                                    <td>
+                                        <span class="badge badge-{{ record._source.status }}">
+                                            {{ record._source.status }}
+                                        </span>
+                                    </td>
+                                    <td>{{ record._source.notes }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <div class="tab-pane fade" id="grades" role="tabpanel">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Assignment</th>
+                                    <th>Score</th>
+                                    <th>Status</th>
+                                    <th>Feedback</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for grade in grades %}
+                                <tr>
+                                    <td>{{ grade._source.assignment_id }}</td>
+                                    <td>{{ grade._source.score }}</td>
+                                    <td>{{ grade._source.status }}</td>
+                                    <td>{{ grade._source.feedback }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
