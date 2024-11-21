@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Manager - Submissions</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-xl font-bold text-gray-800">Classroom Manager</h1>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Dashboard
+                        </a>
+                        <a href="/students" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Students
+                        </a>
+                        <a href="/assignments" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Assignments
+                        </a>
+                        <a href="/submissions" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Submissions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Page Header -->
+        <div class="md:flex md:items-center md:justify-between mb-6">
+            <div class="flex-1 min-w-0">
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                    Submissions Overview
+                </h2>
+            </div>
+            <div class="mt-4 flex md:mt-0 md:ml-4">
+                <button type="button" onclick="exportSubmissionsReport()" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Export Report
+                </button>
+            </div>
+        </div>
+
+        <!-- Statistics Cards -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-file-alt text-indigo-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Total Submissions
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" id="totalSubmissions">
+                                        Loading...
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-clock text-yellow-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Pending Grading
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" id="pendingGrading">
+                                        Loading...
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    On-Time Rate
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" id="onTimeRate">
+                                        Loading...
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-chart-line text-blue-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">
+                                    Average Grade
+                                </dt>
+                                <dd class="flex items-baseline">
+                                    <div class="text-2xl font-semibold text-gray-900" id="averageGrade">
+                                        Loading...
+                                    </div>
+                                </dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Filter and Search -->
+        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6 mb-6">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+                <div class="sm:col-span-2">
+                    <label for="search" class="block text-sm font-medium text-gray-700">Search</label>
+                    <div class="mt-1 flex rounded-md shadow-sm">
+                        <input type="text" id="search" class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300" placeholder="Search by student, assignment...">
+                    </div>
+                </div>
+
+                <div>
+                    <label for="statusFilter" class="block text-sm font-medium text-gray-700">Status</label>
+                    <select id="statusFilter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="">All Status</option>
+                        <option value="submitted">Submitted</option>
+                        <option value="late">Late</option>
+                        <option value="missing">Missing</option>
+                        <option value="graded">Graded</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label for="dateFilter" class="block text-sm font-medium text-gray-700">Date Range</label>
+                    <select id="dateFilter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="all">All Time</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Submissions Table -->
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+            <div class="flex flex-col">
+                <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                    <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Student
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Assignment
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Submission Date
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Grade
+                                    </th>
+                                    <th scope="col" class="relative px-6 py-3">
+                                        <span class="sr-only">Actions</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="submissionsTableBody" class="bg-white divide-y divide-gray-200">
+                                <!-- Submissions will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Pagination -->
+            <div class="bg-white px-4 py-3 border-t border-gray-200 sm:px-6">
+                <div class="flex items-center justify-between">
+                    <div class="flex-1 flex justify-between sm:hidden">
+                        <button onclick="previousPage()" class="relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Previous
+                        </button>
+                        <button onclick="nextPage()" class="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50">
+                            Next
+                        </button>
+                    </div>
+                    <div class="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p class="text-sm text-gray-700">
+                                Showing
+                                <span class="font-medium" id="pageStart">1</span>
+                                to
+                                <span class="font-medium" id="pageEnd">10</span>
+                                of
+                                <span class="font-medium" id="totalItems">--</span>
+                                results
+                            </p>
+                        </div>
+                        <div>
+                            <nav class="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <button onclick="previousPage()" class="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Previous</span>
+                                    <i class="fas fa-chevron-left"></i>
+                                </button>
+                                <div id="paginationNumbers" class="relative inline-flex items-center px-4 py-2 border border-gray-300 bg-white text-sm font-medium text-gray-700">
+                                    <!-- Page numbers will be inserted here -->
+                                </div>
+                                <button onclick="nextPage()" class="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50">
+                                    <span class="sr-only">Next</span>
+                                    <i class="fas fa-chevron-right"></i>
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+<!-- Grade Modal -->
+<div id="gradeModal" class="hidden fixed z-10 inset-0 overflow-y-auto">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+            <form id="gradeForm" onsubmit="handleGradeSubmission(event)">
+                <div>
+                    <h3 class="text-lg leading-6 font-medium text-gray-900" id="modalTitle">Grade Submission</h3>
+                    <div class="mt-4">
+                        <label for="gradeInput" class="block text-sm font-medium text-gray-700">Grade</label>
+                        <input type="number" id="gradeInput" required min="0" max="100" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                    </div>
+                    <div class="mt-4">
+                        <label for="feedbackInput" class="block text-sm font-medium text-gray-700">Feedback</label>
+                        <textarea id="feedbackInput" rows="3" class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md"></textarea>
+                    </div>
+                </div>
+                <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                    <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm">
+                        Save Grade
+                    </button>
+                    <button type="button" onclick="closeGradeModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+                        Cancel
+                    </button>
+                </div>
+                <input type="hidden" id="submissionId">
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    let currentPage = 1;
+    const itemsPerPage = 10;
+    let filteredSubmissions = [];
+    let allSubmissions = [];
+
+    // Initialize page
+    document.addEventListener('DOMContentLoaded', () => {
+        fetchSubmissionsData();
+        setupEventListeners();
+    });
+
+    // Setup event listeners
+    function setupEventListeners() {
+        document.getElementById('search').addEventListener('input', handleSearch);
+        document.getElementById('statusFilter').addEventListener('change', handleFilters);
+        document.getElementById('dateFilter').addEventListener('change', handleFilters);
+    }
+
+    // Fetch submissions data
+    async function fetchSubmissionsData() {
+        try {
+            const [submissionsResponse, statsResponse] = await Promise.all([
+                fetch('/api/submissions'),
+                fetch('/api/submissions/stats')
+            ]);
+
+            allSubmissions = await submissionsResponse.json();
+            const stats = await statsResponse.json();
+
+            updateStats(stats);
+            filteredSubmissions = [...allSubmissions];
+            updateSubmissionsTable();
+            updatePagination();
+        } catch (error) {
+            console.error('Error fetching submissions data:', error);
+        }
+    }
+
+    // Update statistics
+    function updateStats(stats) {
+        document.getElementById('totalSubmissions').textContent = stats.total_submissions;
+        document.getElementById('pendingGrading').textContent = stats.pending_grading;
+        document.getElementById('onTimeRate').textContent = `${stats.on_time_rate}%`;
+        document.getElementById('averageGrade').textContent = `${stats.average_grade.toFixed(1)}%`;
+    }
+
+    // Handle search and filters
+    function handleSearch(event) {
+        const searchTerm = event.target.value.toLowerCase();
+        applyFilters(searchTerm);
+    }
+
+    function handleFilters() {
+        const searchTerm = document.getElementById('search').value.toLowerCase();
+        applyFilters(searchTerm);
+    }
+
+    function applyFilters(searchTerm) {
+        const statusFilter = document.getElementById('statusFilter').value;
+        const dateFilter = document.getElementById('dateFilter').value;
+
+        filteredSubmissions = allSubmissions.filter(submission => {
+            const matchesSearch = (
+                submission.student_name.toLowerCase().includes(searchTerm) ||
+                submission.assignment_title.toLowerCase().includes(searchTerm)
+            );
+
+            const matchesStatus = !statusFilter || submission.status === statusFilter;
+            const matchesDate = filterByDate(submission.submission_date, dateFilter);
+
+            return matchesSearch && matchesStatus && matchesDate;
+        });
+
+        currentPage = 1;
+        updateSubmissionsTable();
+        updatePagination();
+    }
+
+    function filterByDate(date, filter) {
+        if (!filter || filter === 'all') return true;
+
+        const submissionDate = new Date(date);
+        const today = new Date();
+        
+        switch(filter) {
+            case 'today':
+                return submissionDate.toDateString() === today.toDateString();
+            case 'week':
+                const weekAgo = new Date(today.setDate(today.getDate() - 7));
+                return submissionDate >= weekAgo;
+            case 'month':
+                const monthAgo = new Date(today.setMonth(today.getMonth() - 1));
+                return submissionDate >= monthAgo;
+            default:
+                return true;
+        }
+    }
+
+    // Update submissions table
+    function updateSubmissionsTable() {
+        const startIndex = (currentPage - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const currentSubmissions = filteredSubmissions.slice(startIndex, endIndex);
+
+        const tbody = document.getElementById('submissionsTableBody');
+        tbody.innerHTML = currentSubmissions.map(submission => `
+            <tr>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="flex items-center">
+                        <div>
+                            <div class="text-sm font-medium text-gray-900">${submission.student_name}</div>
+                            <div class="text-sm text-gray-500">${submission.student_id}</div>
+                        </div>
+                    </div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${submission.assignment_title}</div>
+                    <div class="text-sm text-gray-500">${submission.subject}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <div class="text-sm text-gray-900">${formatDate(submission.submission_date)}</div>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap">
+                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(submission.status)}">
+                        ${submission.status}
+                    </span>
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                    ${submission.grade ? `${submission.grade}%` : 'Not graded'}
+                </td>
+                <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                    <button onclick="openGradeModal('${submission.submission_id}')" class="text-indigo-600 hover:text-indigo-900 mr-3">Grade</button>
+                    <button onclick="viewSubmissionDetails('${submission.submission_id}')" class="text-gray-600 hover:text-gray-900">View</button>
+                </td>
+            </tr>
+        `).join('');
+
+        updatePaginationInfo(startIndex, endIndex);
+    }
+
+    // Pagination functions
+    function updatePaginationInfo(startIndex, endIndex) {
+        document.getElementById('pageStart').textContent = startIndex + 1;
+        document.getElementById('pageEnd').textContent = Math.min(endIndex, filteredSubmissions.length);
+        document.getElementById('totalItems').textContent = filteredSubmissions.length;
+    }
+
+    function updatePagination() {
+        const totalPages = Math.ceil(filteredSubmissions.length / itemsPerPage);
+        const paginationNumbers = document.getElementById('paginationNumbers');
+        
+        let paginationHTML = '';
+        for (let i = 1; i <= totalPages; i++) {
+            paginationHTML += `
+                <button onclick="goToPage(${i})" class="relative inline-flex items-center px-4 py-2 border ${
+                    currentPage === i ? 'border-indigo-500 bg-indigo-50' : 'border-gray-300'
+                } bg-white text-sm font-medium text-gray-700 hover:bg-gray-50">
+                    ${i}
+                </button>
+            `;
+        }
+        paginationNumbers.innerHTML = paginationHTML;
+    }
+
+    function goToPage(page) {
+        currentPage = page;
+        updateSubmissionsTable();
+    }
+
+    function previousPage() {
+        if (currentPage > 1) {
+            currentPage--;
+            updateSubmissionsTable();
+            updatePagination();
+        }
+    }
+
+    function nextPage() {
+        const totalPages = Math.ceil(filteredSubmissions.length / itemsPerPage);
+        if (currentPage < totalPages) {
+            currentPage++;
+            updateSubmissionsTable();
+            updatePagination();
+        }
+    }
+
+    // Modal functions
+    function openGradeModal(submissionId) {
+        const submission = allSubmissions.find(s => s.submission_id === submissionId);
+        document.getElementById('submissionId').value = submissionId;
+        document.getElementById('modalTitle').textContent = `Grade: ${submission.assignment_title}`;
+        document.getElementById('gradeInput').value = submission.grade || '';
+        document.getElementById('feedbackInput').value = submission.feedback || '';
+        document.getElementById('gradeModal').classList.remove('hidden');
+    }
+
+    function closeGradeModal() {
+        document.getElementById('gradeModal').classList.add('hidden');
+        document.getElementById('gradeForm').reset();
+    }
+
+    // Handle grade submission
+    async function handleGradeSubmission(event) {
+        event.preventDefault();
+        
+        const submissionId = document.getElementById('submissionId').value;
+        const gradeData = {
+            grade: parseInt(document.getElementById('gradeInput').value),
+            feedback: document.getElementById('feedbackInput').value
+        };
+
+        try {
+            const response = await fetch(`/api/submissions/${submissionId}/grade`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(gradeData)
+            });
+
+            if (response.ok) {
+                closeGradeModal();
+                await fetchSubmissionsData(); // Refresh the data
+            } else {
+                console.error('Failed to update grade');
+            }
+        } catch (error) {
+            console.error('Error updating grade:', error);
+        }
+    }
+
+    // Utility functions
+    function formatDate(dateString) {
+        return new Date(dateString).toLocaleString();
+    }
+
+    function getStatusClass(status) {
+        switch (status.toLowerCase()) {
+            case 'submitted':
+                return 'bg-green-100 text-green-800';
+            case 'late':
+                return 'bg-yellow-100 text-yellow-800';
+            case 'missing':
+                return 'bg-red-100 text-red-800';
+            case 'graded':
+                return 'bg-blue-100 text-blue-800';
+            default:
+                return 'bg-gray-100 text-gray-800';
+        }
+    }
+
+    // Export submissions report
+    async function exportSubmissionsReport() {
+        try {
+            const response = await fetch('/api/submissions/export', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    submissions: filteredSubmissions
+                })
+            });
+
+            const blob = await response.blob();
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `submissions_report_${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Error exporting submissions report:', error);
+        }
+    }
+
+    // View submission details
+    function viewSubmissionDetails(submissionId) {
+        window.location.href = `/submission-detail?id=${submissionId}`;
+    }
+</script>
+</body>
+</html>

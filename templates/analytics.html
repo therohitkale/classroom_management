@@ -1,0 +1,528 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Manager - Analytics</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-xl font-bold text-gray-800">Classroom Manager</h1>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Dashboard
+                        </a>
+                        <a href="/students" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Students
+                        </a>
+                        <a href="/assignments" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Assignments
+                        </a>
+                        <a href="/analytics" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Analytics
+                        </a>
+                        <a href="/submissions" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Submissions
+                        </a>
+                    </div>
+                </div>
+                <div class="flex items-center">
+                    <button onclick="exportAnalyticsReport()" class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                        Export Report
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Time Range Filter -->
+        <div class="mb-6">
+            <div class="bg-white shadow rounded-lg p-4">
+                <div class="sm:flex sm:items-center">
+                    <div class="sm:flex-auto">
+                        <h2 class="text-xl font-semibold text-gray-900">Analytics Overview</h2>
+                    </div>
+                    <div class="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
+                        <select id="timeRange" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                            <option value="7">Last 7 Days</option>
+                            <option value="30" selected>Last 30 Days</option>
+                            <option value="90">Last 90 Days</option>
+                            <option value="365">Last Year</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Key Metrics -->
+        <div class="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-6">
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-chart-line text-indigo-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Average Performance</dt>
+                                <dd class="text-2xl font-semibold text-gray-900" id="avgPerformance">--</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-check-circle text-green-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Completion Rate</dt>
+                                <dd class="text-2xl font-semibold text-gray-900" id="completionRate">--</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-users text-blue-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Active Students</dt>
+                                <dd class="text-2xl font-semibold text-gray-900" id="activeStudents">--</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-white overflow-hidden shadow rounded-lg">
+                <div class="p-5">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0">
+                            <i class="fas fa-clock text-yellow-500 text-2xl"></i>
+                        </div>
+                        <div class="ml-5 w-0 flex-1">
+                            <dl>
+                                <dt class="text-sm font-medium text-gray-500 truncate">Average Response Time</dt>
+                                <dd class="text-2xl font-semibold text-gray-900" id="avgResponseTime">--</dd>
+                            </dl>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Performance Charts -->
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
+            <!-- Overall Performance Trend -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Performance Trend</h3>
+                <canvas id="performanceChart" height="300"></canvas>
+            </div>
+
+            <!-- Grade Distribution -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Grade Distribution</h3>
+                <canvas id="gradeDistributionChart" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Subject Performance and Attendance -->
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-6">
+            <!-- Subject Performance -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Subject Performance</h3>
+                <canvas id="subjectPerformanceChart" height="300"></canvas>
+            </div>
+
+            <!-- Attendance Trends -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Attendance Trends</h3>
+                <canvas id="attendanceChart" height="300"></canvas>
+            </div>
+        </div>
+
+        <!-- Top Performers and Areas for Improvement -->
+        <div class="grid grid-cols-1 gap-6 lg:grid-cols-2">
+            <!-- Top Performers -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Top Performers</h3>
+                <div class="flow-root">
+                    <ul id="topPerformersList" class="-my-5 divide-y divide-gray-200">
+                        <!-- Top performers will be inserted here -->
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Improvement Areas -->
+            <div class="bg-white shadow rounded-lg p-6">
+                <h3 class="text-lg font-medium text-gray-900 mb-4">Areas for Improvement</h3>
+                <div class="flow-root">
+                    <ul id="improvementAreasList" class="-my-5 divide-y divide-gray-200">
+                        <!-- Improvement areas will be inserted here -->
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Initialize charts and data
+        let performanceChart, gradeDistributionChart, subjectPerformanceChart, attendanceChart;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+            fetchAnalyticsData();
+            document.getElementById('timeRange').addEventListener('change', fetchAnalyticsData);
+        });
+
+        function initializeCharts() {
+            // Performance Trend Chart
+            const perfCtx = document.getElementById('performanceChart').getContext('2d');
+            performanceChart = new Chart(perfCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Average Performance',
+                        data: [],
+                        borderColor: 'rgb(79, 70, 229)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Grade Distribution Chart
+            const gradeCtx = document.getElementById('gradeDistributionChart').getContext('2d');
+            gradeDistributionChart = new Chart(gradeCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['A', 'B', 'C', 'D', 'F'],
+                    datasets: [{
+                        label: 'Number of Students',
+                        data: [],
+                        backgroundColor: [
+                            'rgba(34, 197, 94, 0.6)',
+                            'rgba(59, 130, 246, 0.6)',
+                            'rgba(234, 179, 8, 0.6)',
+                            'rgba(249, 115, 22, 0.6)',
+                            'rgba(239, 68, 68, 0.6)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                stepSize: 1
+                            }
+                        }
+                    }
+                }
+            });
+
+            // Subject Performance Chart
+            const subjectCtx = document.getElementById('subjectPerformanceChart').getContext('2d');
+            subjectPerformanceChart = new Chart(subjectCtx, {
+                type: 'radar',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Average Score',
+                        data: [],
+                        backgroundColor: 'rgba(79, 70, 229, 0.2)',
+                        borderColor: 'rgb(79, 70, 229)',
+                        pointBackgroundColor: 'rgb(79, 70, 229)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Attendance Chart
+            const attendanceCtx = document.getElementById('attendanceChart').getContext('2d');
+            attendanceChart = new Chart(attendanceCtx, {
+                type: 'line',
+                data: {
+                    labels: [],
+                    datasets: [{
+                        label: 'Present',
+                        data: [],
+                        borderColor: 'rgb(34, 197, 94)',
+                        tension: 0.1
+                    }, {
+                        label: 'Late',
+                        data: [],
+                        borderColor: 'rgb(234, 179, 8)',
+                        tension: 0.1
+                    }, {
+                        label: 'Absent',
+                        data: [],
+                        borderColor: 'rgb(239, 68, 68)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                callback: value => `${value}%`
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        async function fetchAnalyticsData() {
+            const timeRange = document.getElementById('timeRange').value;
+            try {
+                const response = await fetch(`/api/analytics?days=${timeRange}`);
+                const data = await response.json();
+                updateDashboard(data);
+            } catch (error) {
+                console.error('Error fetching analytics data:', error);
+            }
+        }
+
+        function updateDashboard(data) {
+            // Update key metrics
+            document.getElementById('avgPerformance').textContent = `${data.average_performance}%`;
+            document.getElementById('completionRate').textContent = `${data.completion_rate}%`;
+            document.getElementById('activeStudents').textContent = data.active_students;
+            document.getElementById('avgResponseTime').textContent = `${data.average_response_time} hrs`;
+
+            // Update charts
+            updatePerformanceChart(data.performance_trend);
+            updateGradeDistribution(data.grade_distribution);
+            updateSubjectPerformance(data.subject_performance);
+            updateAttendanceChart(data.attendance_trend);
+            updateTopPerformers(data.top_performers);
+            updateImprovementAreas(data.improvement_areas);
+        }
+
+        function updatePerformanceChart(data) {
+            performanceChart.data.labels = data.dates;
+            performanceChart.data.datasets[0].data = data.scores;
+            performanceChart.update();
+        }
+
+        function updateGradeDistribution(data) {
+            gradeDistributionChart.data.datasets[0].data = [
+                data.A,
+                data.B,
+                data.C,
+                data.D,
+                data.F
+            ];
+            gradeDistributionChart.update();
+        }
+
+        function updateSubjectPerformance(data) {
+            subjectPerformanceChart.data.labels = data.subjects;
+            subjectPerformanceChart.data.datasets[0].data = data.averages;
+            subjectPerformanceChart.update();
+        }
+
+        function updateAttendanceChart(data) {
+            attendanceChart.data.labels = data.dates;
+            attendanceChart.data.datasets[0].data = data.present;
+            attendanceChart.data.datasets[1].data = data.late;
+            attendanceChart.data.datasets[2].data = data.absent;
+            attendanceChart.update();
+        }
+
+        function updateTopPerformers(performers) {
+            const list = document.getElementById('topPerformersList');
+            list.innerHTML = performers.map(student => `
+                <li class="py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full bg-indigo-100">
+                                <span class="text-sm font-medium leading-none text-indigo-700">
+                                    ${getInitials(student.name)}
+                                </span>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900 truncate">
+                                ${student.name}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                Average: ${student.average}%
+                            </p>
+                        </div>
+                        <div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                student.trend === 'up' ? 'bg-green-100 text-green-800' : 
+                                student.trend === 'down' ? 'bg-red-100 text-red-800' : 
+                                'bg-gray-100 text-gray-800'
+                            }">
+                                <i class="fas fa-${
+                                    student.trend === 'up' ? 'arrow-up' : 
+                                    student.trend === 'down' ? 'arrow-down' : 
+                                    'minus'
+                                } mr-1"></i>
+                                ${student.trend}
+                            </span>
+                        </div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        function updateImprovementAreas(areas) {
+            const list = document.getElementById('improvementAreasList');
+            list.innerHTML = areas.map(area => `
+                <li class="py-4">
+                    <div class="flex items-center space-x-4">
+                        <div class="flex-shrink-0">
+                            <span class="inline-flex items-center justify-center h-8 w-8 rounded-full ${
+                                area.severity === 'high' ? 'bg-red-100' :
+                                area.severity === 'medium' ? 'bg-yellow-100' :
+                                'bg-blue-100'
+                            }">
+                                <i class="fas fa-exclamation-triangle ${
+                                    area.severity === 'high' ? 'text-red-700' :
+                                    area.severity === 'medium' ? 'text-yellow-700' :
+                                    'text-blue-700'
+                                }"></i>
+                            </span>
+                        </div>
+                        <div class="flex-1 min-w-0">
+                            <p class="text-sm font-medium text-gray-900">
+                                ${area.area}
+                            </p>
+                            <p class="text-sm text-gray-500">
+                                ${area.description}
+                            </p>
+                        </div>
+                        <div>
+                            <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
+                                area.severity === 'high' ? 'bg-red-100 text-red-800' :
+                                area.severity === 'medium' ? 'bg-yellow-100 text-yellow-800' :
+                                'bg-blue-100 text-blue-800'
+                            }">
+                                ${area.severity}
+                            </span>
+                        </div>
+                    </div>
+                </li>
+            `).join('');
+        }
+
+        // Utility functions
+        function getInitials(name) {
+            return name
+                .split(' ')
+                .map(word => word[0])
+                .join('')
+                .toUpperCase();
+        }
+
+        // Export analytics report
+        async function exportAnalyticsReport() {
+            try {
+                const timeRange = document.getElementById('timeRange').value;
+                const response = await fetch(`/api/analytics/export?days=${timeRange}`);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `analytics_report_${new Date().toISOString().split('T')[0]}.pdf`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                window.URL.revokeObjectURL(url);
+            } catch (error) {
+                console.error('Error exporting analytics report:', error);
+            }
+        }
+
+        // Print detailed report
+        function printDetailedReport() {
+            window.print();
+        }
+
+        // Handle time range changes
+        document.getElementById('timeRange').addEventListener('change', (event) => {
+            fetchAnalyticsData();
+        });
+
+        // Handle chart interactions
+        function setupChartInteractions() {
+            const charts = [performanceChart, gradeDistributionChart, subjectPerformanceChart, attendanceChart];
+            
+            charts.forEach(chart => {
+                chart.options.onClick = (event, elements) => {
+                    if (elements.length > 0) {
+                        const element = elements[0];
+                        showDetailedAnalysis(chart.id, element);
+                    }
+                };
+            });
+        }
+
+        // Show detailed analysis modal
+        function showDetailedAnalysis(chartId, element) {
+            // Implementation for showing detailed analysis when clicking chart elements
+            console.log(`Showing detailed analysis for ${chartId} at index ${element.index}`);
+        }
+
+        // Set up real-time updates if needed
+        function setupRealtimeUpdates() {
+            // Refresh data every 5 minutes
+            setInterval(fetchAnalyticsData, 300000);
+        }
+
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initializeCharts();
+            fetchAnalyticsData();
+            setupChartInteractions();
+            setupRealtimeUpdates();
+        });
+    </script>
+</body>
+</html>

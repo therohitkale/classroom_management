@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Search</h2>
+<form action="/search" method="GET" class="mb-4">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="input-group">
+                <input type="text" class="form-control" name="q" value="{{ query }}" placeholder="Search term...">
+                <select class="form-select" name="type">
+                    <option value="students" {% if search_type == 'students' %}selected{% endif %}>Students</option>
+                    <option value="assignments" {% if search_type == 'assignments' %}selected{% endif %}>Assignments</option>
+                </select>
+                <button class="btn btn-primary" type="submit">Search</button>
+            </div>
+        </div>
+    </div>
+</form>
+
+{% if results is not none %}
+    {% if results %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        {% if search_type == 'students' %}
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Grade</th>
+                            <th>Email</th>
+                        {% else %}
+                            <th>Title</th>
+                            <th>Description</th>
+                            <th>Due Date</th>
+                            <th>Subject</th>
+                        {% endif %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                        <tr>
+                            {% if search_type == 'students' %}
+                                <td>{{ result.student_id }}</td>
+                                <td>{{ result.name }}</td>
+                                <td>{{ result.grade }}</td>
+                                <td>{{ result.email }}</td>
+                            {% else %}
+                                <td>{{ result.title }}</td>
+                                <td>{{ result.description }}</td>
+                                <td>{{ result.due_date }}</td>
+                                <td>{{ result.subject }}</td>
+                            {% endif %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% else %}
+        <div class="alert alert-info">No results found.</div>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Classroom Manager - Students</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Icons -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.7.0/chart.min.js"></script>
+</head>
+<body class="bg-gray-50">
+    <!-- Navigation Bar -->
+    <nav class="bg-white shadow-lg">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex justify-between h-16">
+                <div class="flex">
+                    <div class="flex-shrink-0 flex items-center">
+                        <h1 class="text-xl font-bold text-gray-800">Classroom Manager</h1>
+                    </div>
+                    <div class="hidden sm:ml-6 sm:flex sm:space-x-8">
+                        <a href="/" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Dashboard
+                        </a>
+                        <a href="/students" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Students
+                        </a>
+                        <a href="/assignments" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Assignments
+                        </a>
+                        <a href="/analytics" class="border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Analytics
+                        </a>
+                        <a href="/submissions" class="border-indigo-500 text-gray-900 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium">
+                            Submissions
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="max-w-7xl mx-auto py-6 sm:px-6 lg:px-8">
+        <!-- Page Header -->
+        <div class="md:flex md:items-center md:justify-between mb-6">
+            <div class="flex-1 min-w-0">
+                <h2 class="text-2xl font-bold leading-7 text-gray-900 sm:text-3xl sm:truncate">
+                    Students
+                </h2>
+            </div>
+            <div class="mt-4 flex md:mt-0 md:ml-4">
+                <button type="button" onclick="openAddStudentModal()" class="ml-3 inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500">
+                    Add Student
+                </button>
+            </div>
+        </div>
+
+        <!-- Search and Filter Bar -->
+        <div class="bg-white shadow px-4 py-5 sm:rounded-lg sm:p-6 mb-6">
+            <div class="grid grid-cols-1 gap-6 sm:grid-cols-4">
+                <div class="sm:col-span-2">
+                    <label for="search" class="block text-sm font-medium text-gray-700">Search Students</label>
+                    <div class="mt-1 flex rounded-md shadow-sm">
+                        <input type="text" name="search" id="search" class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300" placeholder="Search by name, ID, or email">
+                    </div>
+                </div>
+                <div>
+                    <label for="grade-filter" class="block text-sm font-medium text-gray-700">Grade</label>
+                    <select id="grade-filter" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="">All Grades</option>
+                        <option value="9">Grade 9</option>
+                        <option value="10">Grade 10</option>
+                        <option value="11">Grade 11</option>
+                        <option value="12">Grade 12</option>
+                    </select>
+                </div>
+                <div>
+                    <label for="sort-by" class="block text-sm font-medium text-gray-700">Sort By</label>
+                    <select id="sort-by" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                        <option value="name">Name</option>
+                        <option value="grade">Grade</option>
+                        <option value="performance">Performance</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- Students List -->
+        <div class="flex flex-col">
+            <div class="-my-2 overflow-x-auto sm:-mx-6 lg:-mx-8">
+                <div class="py-2 align-middle inline-block min-w-full sm:px-6 lg:px-8">
+                    <div class="shadow overflow-hidden border-b border-gray-200 sm:rounded-lg">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Student
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Grade
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Performance
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="relative px-6 py-3">
+                                        <span class="sr-only">Actions</span>
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsList" class="bg-white divide-y divide-gray-200">
+                                <!-- Student rows will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add Student Modal -->
+    <div id="addStudentModal" class="hidden fixed z-10 inset-0 overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+        <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+            <div class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6">
+                <form id="addStudentForm" onsubmit="handleAddStudent(event)">
+                    <div>
+                        <h3 class="text-lg leading-6 font-medium text-gray-900" id="modal-title">Add New Student</h3>
+                        <div class="mt-4 space-y-4">
+                            <div>
+                                <label for="studentName" class="block text-sm font-medium text-gray-700">Full Name</label>
+                                <input type="text" name="studentName" id="studentName" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="studentEmail" class="block text-sm font-medium text-gray-700">Email</label>
+                                <input type="email" name="studentEmail" id="studentEmail" required class="mt-1 focus:ring-indigo-500 focus:border-indigo-500 block w-full shadow-sm sm:text-sm border-gray-300 rounded-md">
+                            </div>
+                            <div>
+                                <label for="studentGrade" class="block text-sm font-medium text-gray-700">Grade</label>
+                                <select name="studentGrade" id="studentGrade" required class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+                                    <option value="9">Grade 9</option>
+                                    <option value="10">Grade 10</option>
+                                    <option value="11">Grade 11</option>
+                                    <option value="12">Grade 12</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                        <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:col-start-2 sm:text-sm">
+                            Add Student
+                        </button>
+                        <button type="button" onclick="closeAddStudentModal()" class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:col-start-1 sm:text-sm">
+                            Cancel
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Fetch and display students
+        async function fetchStudents() {
+            try {
+                const response = await fetch('/api/students');
+                const students = await response.json();
+                displayStudents(students);
+            } catch (error) {
+                console.error('Error fetching students:', error);
+            }
+        }
+
+        // Display students in the table
+        function displayStudents(students) {
+            const studentsList = document.getElementById('studentsList');
+            studentsList.innerHTML = students.map(student => `
+                <tr>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="flex items-center">
+                            <div>
+                                <div class="text-sm font-medium text-gray-900">
+                                    ${student.name}
+                                </div>
+                                <div class="text-sm text-gray-500">
+                                    ${student.email}
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">Grade ${student.grade}</div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <div class="text-sm text-gray-900">85%</div>
+                        <div class="w-full bg-gray-200 rounded-full h-2.5">
+                            <div class="bg-indigo-600 h-2.5 rounded-full" style="width: 85%"></div>
+                        </div>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap">
+                        <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                            Active
+                        </span>
+                    </td>
+                    <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                        <a href="#" class="text-indigo-600 hover:text-indigo-900 mr-4">Edit</a>
+                        <a href="#" class="text-red-600 hover:text-red-900">Delete</a>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        // Modal functions
+        function openAddStudentModal() {
+            document.getElementById('addStudentModal').classList.remove('hidden');
+        }
+
+        function closeAddStudentModal() {
+            document.getElementById('addStudentModal').classList.add('hidden');
+        }
+
+        // Handle add student form submission
+        async function handleAddStudent(event) {
+            event.preventDefault();
+            
+            const formData = {
+                name: document.getElementById('studentName').value,
+                email: document.getElementById('studentEmail').value,
+                grade: document.getElementById('studentGrade').value,
+                student_id: 'STU' + Date.now()
+            };
+
+            try {
+                const response = await fetch('/api/students', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    closeAddStudentModal();
+                    fetchStudents();
+                    document.getElementById('addStudentForm').reset();
+                } else {
+                    console.error('Failed to add student');
+                }
+            } catch (error) {
+                console.error('Error adding student:', error);
+            }
+        }
+
+        // Search functionality
+        document.getElementById('search').addEventListener('input', function(e) {
+            const searchTerm = e.target.value.toLowerCase();
+            const gradeFilter = document.getElementById('grade-filter').value;
+            filterStudents(searchTerm, gradeFilter);
+        });
+
+        // Grade filter functionality
+        document.getElementById('grade-filter').addEventListener('change', function(e) {
+            const gradeFilter = e.target.value;
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            filterStudents(searchTerm, gradeFilter);
+        });
+
+        // Sort functionality
+        document.getElementById('sort-by').addEventListener('change', function(e) {
+            const sortBy = e.target.value;
+            const rows = Array.from(document.querySelectorAll('#studentsList tr'));
+            
+            rows.sort((a, b) => {
+                let aValue, bValue;
+                
+                switch(sortBy) {
+                    case 'name':
+                        aValue = a.querySelector('.text-sm.font-medium').textContent;
+                        bValue = b.querySelector('.text-sm.font-medium').textContent;
+                        return aValue.localeCompare(bValue);
+                    
+                    case 'grade':
+                        aValue = parseInt(a.querySelectorAll('td')[1].textContent.replace('Grade ', ''));
+                        bValue = parseInt(b.querySelectorAll('td')[1].textContent.replace('Grade ', ''));
+                        return aValue - bValue;
+                    
+                    case 'performance':
+                        aValue = parseInt(a.querySelectorAll('td')[2].textContent);
+                        bValue = parseInt(b.querySelectorAll('td')[2].textContent);
+                        return bValue - aValue;
+                    
+                    default:
+                        return 0;
+                }
+            });
+
+            const tbody = document.getElementById('studentsList');
+            tbody.innerHTML = '';
+            rows.forEach(row => tbody.appendChild(row));
+        });
+
+        // Combined filter function
+        function filterStudents(searchTerm, gradeFilter) {
+            const rows = document.querySelectorAll('#studentsList tr');
+            
+            rows.forEach(row => {
+                const text = row.textContent.toLowerCase();
+                const grade = row.querySelectorAll('td')[1].textContent.replace('Grade ', '');
+                const matchesSearch = text.includes(searchTerm);
+                const matchesGrade = !gradeFilter || grade === gradeFilter;
+                
+                if (matchesSearch && matchesGrade) {
+                    row.style.display = '';
+                } else {
+                    row.style.display = 'none';
+                }
+            });
+        }
+
+        // Delete student functionality
+        async function deleteStudent(studentId) {
+            if (confirm('Are you sure you want to delete this student?')) {
+                try {
+                    const response = await fetch(`/api/students/${studentId}`, {
+                        method: 'DELETE'
+                    });
+
+                    if (response.ok) {
+                        fetchStudents();
+                    } else {
+                        console.error('Failed to delete student');
+                    }
+                } catch (error) {
+                    console.error('Error deleting student:', error);
+                }
+            }
+        }
+
+        // Edit student functionality
+        function openEditStudentModal(student) {
+            // Populate the form with student data
+            document.getElementById('studentName').value = student.name;
+            document.getElementById('studentEmail').value = student.email;
+            document.getElementById('studentGrade').value = student.grade;
+            
+            // Change form submit handler to update instead of create
+            const form = document.getElementById('addStudentForm');
+            form.onsubmit = (e) => handleEditStudent(e, student.student_id);
+            
+            // Update modal title
+            document.getElementById('modal-title').textContent = 'Edit Student';
+            
+            // Show modal
+            openAddStudentModal();
+        }
+
+        async function handleEditStudent(event, studentId) {
+            event.preventDefault();
+            
+            const formData = {
+                student_id: studentId,
+                name: document.getElementById('studentName').value,
+                email: document.getElementById('studentEmail').value,
+                grade: document.getElementById('studentGrade').value
+            };
+
+            try {
+                const response = await fetch(`/api/students/${studentId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    closeAddStudentModal();
+                    fetchStudents();
+                    resetForm();
+                } else {
+                    console.error('Failed to update student');
+                }
+            } catch (error) {
+                console.error('Error updating student:', error);
+            }
+        }
+
+        // Reset form to add mode
+        function resetForm() {
+            const form = document.getElementById('addStudentForm');
+            form.reset();
+            form.onsubmit = handleAddStudent;
+            document.getElementById('modal-title').textContent = 'Add New Student';
+        }
+
+        // Export students to CSV
+        function exportToCSV() {
+            const rows = document.querySelectorAll('#studentsList tr');
+            let csv = 'Name,Email,Grade,Performance\n';
+            
+            rows.forEach(row => {
+                if (row.style.display !== 'none') {
+                    const name = row.querySelector('.text-sm.font-medium').textContent.trim();
+                    const email = row.querySelector('.text-sm.text-gray-500').textContent.trim();
+                    const grade = row.querySelectorAll('td')[1].textContent.trim();
+                    const performance = row.querySelectorAll('td')[2].textContent.trim();
+                    
+                    csv += `${name},${email},${grade},${performance}\n`;
+                }
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.setAttribute('hidden', '');
+            a.setAttribute('href', url);
+            a.setAttribute('download', 'students.csv');
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+
+        // Performance chart for individual student
+        function showStudentPerformance(studentId) {
+            // Fetch student performance data and show in modal
+            fetch(`/api/students/${studentId}/performance`)
+                .then(response => response.json())
+                .then(data => {
+                    const ctx = document.getElementById('performanceChart').getContext('2d');
+                    new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: data.labels,
+                            datasets: [{
+                                label: 'Performance',
+                                data: data.performance,
+                                borderColor: 'rgb(79, 70, 229)',
+                                tension: 0.1
+                            }]
+                        },
+                        options: {
+                            responsive: true,
+                            scales: {
+                                y: {
+                                    beginAtZero: true,
+                                    max: 100
+                                }
+                            }
+                        }
+                    });
+                });
+        }
+
+        // Initialize the page
+        document.addEventListener('DOMContentLoaded', () => {
+            fetchStudents();
+            
+            // Add event listeners for filter changes
+            document.getElementById('search').addEventListener('input', function(e) {
+                const searchTerm = e.target.value.toLowerCase();
+                const gradeFilter = document.getElementById('grade-filter').value;
+                filterStudents(searchTerm, gradeFilter);
+            });
+
+            document.getElementById('grade-filter').addEventListener('change', function(e) {
+                const gradeFilter = e.target.value;
+                const searchTerm = document.getElementById('search').value.toLowerCase();
+                filterStudents(searchTerm, gradeFilter);
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-4">
+        <h2>Student Analytics - {{ student.name }}</h2>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Individual Performance Card -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Performance Overview</h5>
+                <div class="d-flex justify-content-between mb-3">
+                    <select class="form-select w-auto" id="studentPerformancePeriod">
+                        <option value="monthly">Monthly</option>
+                        <option value="quarterly">Quarterly</option>
+                        <option value="yearly">Yearly</option>
+                    </select>
+                </div>
+                <canvas id="studentPerformanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Attendance Record Card -->
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Attendance Record</h5>
+                <canvas id="studentAttendanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <!-- Subject Performance Card -->
+    <div class="col-md-12 mb-4">
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Subject Performance</h5>
+                <canvas id="subjectPerformanceChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Add similar chart initialization and update functions for student analytics
+</script>
+{% endblock %}

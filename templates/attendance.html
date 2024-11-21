@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grades - Classroom Management</title>
+    <style>
+        body { 
+            font-family: Arial; 
+            margin: 20px; 
+            background-color: #f0f2f5; 
+        }
+        .container { 
+            max-width: 800px; 
+            margin: 0 auto; 
+        }
+        .nav { 
+            background-color: white; 
+            padding: 15px; 
+            margin-bottom: 20px; 
+            border-radius: 5px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        .nav a { 
+            margin-right: 15px; 
+            text-decoration: none; 
+            color: #1a73e8; 
+        }
+        .card { 
+            background: white; 
+            padding: 20px; 
+            margin-bottom: 20px; 
+            border-radius: 5px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); 
+        }
+        table { 
+            width: 100%; 
+            border-collapse: collapse; 
+        }
+        th, td { 
+            text-align: left; 
+            padding: 12px; 
+            border-bottom: 1px solid #ddd; 
+        }
+        input, select, textarea { 
+            width: 100%;
+            padding: 8px; 
+            margin: 5px 0; 
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        button { 
+            padding: 8px 16px; 
+            background-color: #1a73e8; 
+            color: white; 
+            border: none; 
+            border-radius: 4px; 
+            cursor: pointer; 
+        }
+        button:hover { 
+            background-color: #1557b0; 
+        }
+        .grade-a { color: #34a853; }
+        .grade-b { color: #4285f4; }
+        .grade-c { color: #fbbc05; }
+        .grade-d { color: #fa7b17; }
+        .grade-f { color: #ea4335; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav">
+            <a href="index.html">Dashboard</a>
+            <a href="students.html">Students</a>
+            <a href="attendance.html">Attendance</a>
+            <a href="grades.html">Grades</a>
+        </div>
+
+        <div class="card">
+            <h2>Record Grade</h2>
+            <form id="gradeForm" onsubmit="return recordGrade(event)">
+                <div>
+                    <label for="studentId">Student ID</label>
+                    <input type="text" id="studentId" required>
+                </div>
+                <div>
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" required>
+                </div>
+                <div>
+                    <label for="score">Score</label>
+                    <input type="number" id="score" min="0" max="100" required>
+                </div>
+                <div>
+                    <label for="notes">Notes (optional)</label>
+                    <textarea id="notes" rows="3"></textarea>
+                </div>
+                <button type="submit">Record Grade</button>
+            </form>
+        </div>
+
+        <div class="card">
+            <h2>Recent Grades</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Student ID</th>
+                        <th>Subject</th>
+                        <th>Score</th>
+                        <th>Grade</th>
+                        <th>Date</th>
+                    </tr>
+                </thead>
+                <tbody id="gradesList"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8000/api';
+
+        function getGradeClass(score) {
+            if (score >= 90) return 'grade-a';
+            if (score >= 80) return 'grade-b';
+            if (score >= 70) return 'grade-c';
+            if (score >= 60) return 'grade-d';
+            return 'grade-f';
+        }
+
+        function getLetterGrade(score) {
+            if (score >= 90) return 'A';
+            if (score >= 80) return 'B';
+            if (score >= 70) return 'C';
+            if (score >= 60) return 'D';
+            return 'F';
+        }
+
+        async function loadGrades() {
+            try {
+                const response = await fetch(`${API_URL}/grades`);
+                const grades = await response.json();
+                const tbody = document.getElementById('gradesList');
+                tbody.innerHTML = grades.map(grade => {
+                    const gradeClass = getGradeClass(grade.score);
+                    const letterGrade = getLetterGrade(grade.score);
+                    return `
+                        <tr>
+                            <td>${grade.student_id}</td>
+                            <td>${grade.subject}</td>
+                            <td>${grade.score}</td>
+                            <td class="${gradeClass}">${letterGrade}</td>
+                            <td>${new Date(grade.date).toLocaleDateString()}</td>
+                        </tr>
+                    `;
+                }).join('');
+            } catch (error) {
+                console.error('Error loading grades:', error);
+            }
+        }
+
+        async function recordGrade(event) {
+            event.preventDefault();
+            try {
+                const response = await fetch(`${API_URL}/grades`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        student_id: document.getElementById('studentId').value,
+                        subject: document.getElementById('subject').value,
+                        score: Number(document.getElementById('score').value),
+                        notes: document.getElementById('notes').value,
+                        date: new Date().toISOString().split('T')[0]
+                    })
+                });
+                if (response.ok) {
+                    event.target.reset();
+                    loadGrades();
+                    alert('Grade recorded successfully!');
+                }
+            } catch (error) {
+                console.error('Error recording grade:', error);
+                alert('Error recording grade');
+            }
+            return false;
+        }
+
+        // Load grades when page loads
+        loadGrades();
+    </script>
+</body>
+</html>
